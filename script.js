@@ -1,9 +1,11 @@
 const STORAGE_KEYS = {
-  role: 'daaianew_role',
+  isAdmin: 'daaianew_is_admin',
   menuPhoto: 'daaianew_menu_photo',
   menuItems: 'daaianew_menu_items',
   contact: 'daaianew_contact'
 };
+
+const ADMIN_PASSWORD = 'daaianew123';
 
 const defaultMenuItems = [
   { id: crypto.randomUUID(), name: 'Cheesy Ensaymada', regular: '₱149 / tub of 3', premium: '', description: 'Soft ensaymada topped with rich cheese and buttery sweetness.', image: 'assets/menu.png' },
@@ -33,33 +35,46 @@ const defaultContact = {
 };
 
 const state = {
-  role: localStorage.getItem(STORAGE_KEYS.role) || 'customer',
+  isAdmin: localStorage.getItem(STORAGE_KEYS.isAdmin) === 'true',
   menuPhoto: localStorage.getItem(STORAGE_KEYS.menuPhoto) || 'assets/menu.png',
   menuItems: getStoredArray(STORAGE_KEYS.menuItems, defaultMenuItems),
   contact: getStoredObject(STORAGE_KEYS.contact, defaultContact)
 };
 
-const roleSelect = document.getElementById('roleSelect');
+const roleStatus = document.getElementById('roleStatus');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+const adminDialog = document.getElementById('adminDialog');
+const closeAdminDialogBtn = document.getElementById('closeAdminDialogBtn');
+const adminLoginForm = document.getElementById('adminLoginForm');
+const adminPassword = document.getElementById('adminPassword');
+const adminError = document.getElementById('adminError');
+
 const menuPhoto = document.getElementById('menuPhoto');
 const menuPhotoForm = document.getElementById('menuPhotoForm');
-const menuPhotoUrlInput = document.getElementById('menuPhotoUrl');
+const menuPhotoFile = document.getElementById('menuPhotoFile');
 const changePhotoBtn = document.getElementById('changePhotoBtn');
+
 const menuTableBody = document.getElementById('menuTableBody');
 const drinksList = document.getElementById('drinksList');
+
 const contactGrid = document.getElementById('contactGrid');
 const contactForm = document.getElementById('contactForm');
 const editContactBtn = document.getElementById('editContactBtn');
 const addMenuItemBtn = document.getElementById('addMenuItemBtn');
+
 const itemDialog = document.getElementById('itemDialog');
 const closeDialogBtn = document.getElementById('closeDialogBtn');
 const dialogImage = document.getElementById('dialogImage');
 const dialogTitle = document.getElementById('dialogTitle');
 const dialogPrice = document.getElementById('dialogPrice');
 const dialogDescription = document.getElementById('dialogDescription');
+
 const itemFormDialog = document.getElementById('itemFormDialog');
 const closeFormDialogBtn = document.getElementById('closeFormDialogBtn');
 const itemFormTitle = document.getElementById('itemFormTitle');
 const itemForm = document.getElementById('itemForm');
+
 const filterButtons = document.querySelectorAll('.filter-btn');
 const sections = document.querySelectorAll('.menu-section');
 const yearEl = document.getElementById('year');
@@ -71,25 +86,62 @@ if (yearEl) {
 init();
 
 function init() {
-  roleSelect.value = state.role;
   menuPhoto.src = state.menuPhoto;
   renderAll();
 
-  roleSelect.addEventListener('change', handleRoleChange);
-  changePhotoBtn.addEventListener('click', () => {
-    menuPhotoForm.hidden = !menuPhotoForm.hidden;
-    menuPhotoUrlInput.value = state.menuPhoto;
+  adminLoginBtn.addEventListener('click', () => {
+    adminError.textContent = '';
+    adminLoginForm.reset();
+    adminDialog.showModal();
   });
 
-  menuPhotoForm.addEventListener('submit', (event) => {
+  closeAdminDialogBtn.addEventListener('click', () => adminDialog.close());
+
+  adminLoginForm.addEventListener('submit', (event) => {
     event.preventDefault();
-    state.menuPhoto = menuPhotoUrlInput.value.trim() || 'assets/menu.png';
+    if (adminPassword.value === ADMIN_PASSWORD) {
+      state.isAdmin = true;
+      localStorage.setItem(STORAGE_KEYS.isAdmin, 'true');
+      adminDialog.close();
+      renderAdminVisibility();
+    } else {
+      adminError.textContent = 'Incorrect password.';
+    }
+  });
+
+  adminLogoutBtn.addEventListener('click', () => {
+    state.isAdmin = false;
+    localStorage.setItem(STORAGE_KEYS.isAdmin, 'false');
+    renderAdminVisibility();
+  });
+
+  changePhotoBtn.addEventListener('click', () => {
+    menuPhotoForm.hidden = !menuPhotoForm.hidden;
+  });
+
+  menuPhotoForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!isAdmin()) {
+      return;
+    }
+
+    const file = menuPhotoFile.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const imageData = await fileToDataUrl(file);
+    state.menuPhoto = imageData;
     localStorage.setItem(STORAGE_KEYS.menuPhoto, state.menuPhoto);
     menuPhoto.src = state.menuPhoto;
     menuPhotoForm.hidden = true;
+    menuPhotoForm.reset();
   });
 
   addMenuItemBtn.addEventListener('click', () => {
+    if (!isAdmin()) {
+      return;
+    }
     openItemForm();
   });
 
@@ -130,20 +182,29 @@ function init() {
   closeDialogBtn.addEventListener('click', () => itemDialog.close());
   closeFormDialogBtn.addEventListener('click', () => itemFormDialog.close());
 
-  itemForm.addEventListener('submit', (event) => {
+  itemForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!isAdmin()) {
       return;
     }
 
     const formData = new FormData(itemForm);
+    const editingId = String(formData.get('id') || '');
+    const current = state.menuItems.find((entry) => entry.id === editingId);
+    const selectedFile = itemForm.elements.imageFile.files?.[0];
+
+    let imageValue = current?.image || state.menuPhoto;
+    if (selectedFile) {
+      imageValue = await fileToDataUrl(selectedFile);
+    }
+
     const payload = {
-      id: formData.get('id') || crypto.randomUUID(),
+      id: editingId || crypto.randomUUID(),
       name: String(formData.get('name') || '').trim(),
       regular: String(formData.get('regular') || '').trim(),
       premium: String(formData.get('premium') || '').trim(),
       description: String(formData.get('description') || '').trim(),
-      image: String(formData.get('image') || '').trim() || 'assets/menu.png'
+      image: imageValue
     };
 
     const index = state.menuItems.findIndex((entry) => entry.id === payload.id);
@@ -206,14 +267,8 @@ function init() {
   });
 }
 
-function handleRoleChange(event) {
-  state.role = event.target.value;
-  localStorage.setItem(STORAGE_KEYS.role, state.role);
-  renderAdminVisibility();
-}
-
 function isAdmin() {
-  return state.role === 'admin';
+  return state.isAdmin;
 }
 
 function renderAll() {
@@ -260,6 +315,11 @@ function renderContact() {
 
 function renderAdminVisibility() {
   const showAdmin = isAdmin();
+  roleStatus.textContent = showAdmin ? 'Admin View' : 'Customer View';
+
+  adminLoginBtn.hidden = showAdmin;
+  adminLogoutBtn.hidden = !showAdmin;
+
   const adminElements = document.querySelectorAll('.admin-only');
   adminElements.forEach((element) => {
     element.hidden = !showAdmin;
@@ -295,7 +355,6 @@ function openItemForm(item) {
     itemForm.elements.regular.value = item.regular;
     itemForm.elements.premium.value = item.premium;
     itemForm.elements.description.value = item.description;
-    itemForm.elements.image.value = item.image;
   } else {
     itemFormTitle.textContent = 'Add Menu Item';
   }
@@ -328,13 +387,19 @@ function getStoredObject(key, fallback) {
     }
 
     const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === 'object') {
-      return parsed;
-    }
-    return fallback;
+    return parsed && typeof parsed === 'object' ? parsed : fallback;
   } catch {
     return fallback;
   }
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.readAsDataURL(file);
+  });
 }
 
 function escapeHtml(value) {
