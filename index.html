@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daaianew Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <div>
+          <p class="eyebrow">Home-baked Goodness</p>
+          <h1 class="brand-title">Daaianew</h1>
+        </div>
+
+        <div class="header-actions" aria-label="Role area">
+          <span class="role-pill" id="roleStatus">Customer View</span>
+          <button id="adminLoginBtn" class="text-btn" type="button">Admin Login</button>
+          <button id="adminLogoutBtn" class="text-btn admin-only" type="button" hidden>Logout</button>
+          <a
+            class="order-btn"
+            href="https://m.me/your-messenger-username"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Order Now</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="menu-layout" aria-labelledby="menu-title">
+        <section class="visual-card" aria-labelledby="menu-photo-title">
+          <div class="card-head">
+            <h2 id="menu-photo-title">Menu Photo</h2>
+            <button class="admin-only text-btn" id="changePhotoBtn" type="button" hidden>Edit Photo</button>
+          </div>
+          <div class="lace-frame">
+            <img
+              id="menuPhoto"
+              src="assets/menu.png"
+              alt="Daaianew menu poster showcasing baked goods and drinks"
+              loading="lazy"
+            />
+          </div>
+
+          <form id="menuPhotoForm" class="admin-only inline-form" hidden>
+            <label for="menuPhotoFile">Upload image from device</label>
+            <input id="menuPhotoFile" name="menuPhotoFile" type="file" accept="image/*" />
+            <p class="helper-text">Saved in this browser via local storage.</p>
+            <div class="form-actions"><button type="submit">Save Photo</button></div>
+          </form>
+        </section>
+
+        <section class="content-card" aria-labelledby="menu-title">
+          <h2 id="menu-title" class="section-title">Menu & Drinks</h2>
+          <p class="tagline">Freshly baked favorites and handcrafted drinks.</p>
+
+          <nav class="filter-nav" aria-label="Filter menu categories">
+            <button class="filter-btn active" type="button" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter-btn" type="button" data-filter="menu" aria-pressed="false">Menu</button>
+            <button class="filter-btn" type="button" data-filter="drinks" aria-pressed="false">Drinks</button>
+          </nav>
+
+          <section class="menu-section" data-category="menu" aria-labelledby="menu-heading">
+            <div class="card-head">
+              <h3 id="menu-heading">Menu</h3>
+              <button class="admin-only text-btn" id="addMenuItemBtn" type="button" hidden>+ Add Item</button>
+            </div>
+            <p class="item-hint">Click an item name to view photo and description.</p>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Regular</th>
+                    <th scope="col">Premium</th>
+                    <th class="admin-only" scope="col" hidden>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="menuTableBody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="menu-section" data-category="drinks" aria-labelledby="drinks-heading">
+            <h3 id="drinks-heading">Drinks</h3>
+            <ul class="drinks-list" id="drinksList"></ul>
+          </section>
+        </section>
+      </section>
+
+      <section id="contact" class="contact-card" aria-labelledby="contact-heading">
+        <div class="card-head">
+          <h2 id="contact-heading">Contact &amp; Orders</h2>
+          <button class="admin-only text-btn" id="editContactBtn" type="button" hidden>Edit</button>
+        </div>
+        <div class="contact-grid" id="contactGrid"></div>
+
+        <form id="contactForm" class="admin-only" hidden>
+          <div class="form-grid">
+            <label>
+              Instagram
+              <input name="instagram" type="text" required />
+            </label>
+            <label>
+              Phone
+              <input name="phone" type="text" required />
+            </label>
+            <label>
+              Location
+              <input name="location" type="text" required />
+            </label>
+            <label>
+              Operating Hours
+              <input name="hours" type="text" required />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit">Save Contact</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="storage-note" aria-label="Storage note">
+        <p>
+          <strong>Note:</strong> This demo stores edits and images in browser local storage. For production, use backend storage
+          (database + file storage) so data persists across devices/users.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="year"></span> Daaianew. Made with love.</p>
+    </footer>
+
+    <dialog id="adminDialog" class="item-dialog">
+      <article>
+        <button id="closeAdminDialogBtn" class="dialog-close" type="button" aria-label="Close">×</button>
+        <h2>Admin Authentication</h2>
+        <p class="helper-text">Default password: <code>daaianew123</code> (change in source for production).</p>
+        <form id="adminLoginForm">
+          <label>
+            Password
+            <input id="adminPassword" type="password" required />
+          </label>
+          <button type="submit">Login as Admin</button>
+          <p id="adminError" class="error-text" aria-live="polite"></p>
+        </form>
+      </article>
+    </dialog>
+
+    <dialog id="itemDialog" class="item-dialog">
+      <article>
+        <button id="closeDialogBtn" class="dialog-close" type="button" aria-label="Close">×</button>
+        <img id="dialogImage" src="assets/menu.png" alt="Selected menu item preview" />
+        <h2 id="dialogTitle"></h2>
+        <p id="dialogPrice"></p>
+        <p id="dialogDescription"></p>
+      </article>
+    </dialog>
+
+    <dialog id="itemFormDialog" class="item-dialog">
+      <article>
+        <button id="closeFormDialogBtn" class="dialog-close" type="button" aria-label="Close">×</button>
+        <h2 id="itemFormTitle">Add Menu Item</h2>
+        <form id="itemForm">
+          <input type="hidden" name="id" />
+          <label>
+            Item name
+            <input name="name" type="text" required />
+          </label>
+          <label>
+            Regular price
+            <input name="regular" type="text" required />
+          </label>
+          <label>
+            Premium price (optional)
+            <input name="premium" type="text" />
+          </label>
+          <label>
+            Description
+            <textarea name="description" rows="3" required></textarea>
+          </label>
+          <label>
+            Item image upload
+            <input name="imageFile" type="file" accept="image/*" />
+          </label>
+          <button type="submit">Save Item</button>
+        </form>
+      </article>
+    </dialog>
+
+    <script src="script.js"></script>
+  </body>
+</html>
