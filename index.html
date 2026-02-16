@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daaianew Menu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <p class="eyebrow">Home-baked Goodness</p>
+        <a class="order-btn" href="#contact">Order Now</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="menu-layout" aria-labelledby="brand-title">
+        <div class="visual-card">
+          <div class="lace-frame">
+            <img
+              src="assets/menu.png"
+              alt="Daaianew menu poster showcasing baked goods and drinks"
+              loading="lazy"
+            />
+          </div>
+        </div>
+
+        <section class="content-card">
+          <h1 id="brand-title" class="brand-title">Daaianew</h1>
+          <p class="tagline">Freshly baked favorites and handcrafted drinks.</p>
+
+          <nav class="filter-nav" aria-label="Filter menu categories">
+            <button class="filter-btn active" type="button" data-filter="all">All</button>
+            <button class="filter-btn" type="button" data-filter="menu">Menu</button>
+            <button class="filter-btn" type="button" data-filter="drinks">Drinks</button>
+          </nav>
+
+          <section class="menu-section" data-category="menu" aria-labelledby="menu-heading">
+            <h2 id="menu-heading">Menu</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Regular</th>
+                    <th scope="col">Premium</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Cheesy Ensaymada</th>
+                    <td>₱149 / tub of 3</td>
+                    <td>—</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Egg Tart</th>
+                    <td>₱35 / pc</td>
+                    <td>—</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Burnt Cheesecake</th>
+                    <td>₱45 / pc</td>
+                    <td>₱55</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Fudgy Brownies</th>
+                    <td>₱45 / pc</td>
+                    <td>₱55</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Bento Cake</th>
+                    <td>₱300</td>
+                    <td>—</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Crinkles</th>
+                    <td>₱100 / tub of 10</td>
+                    <td>₱150</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Cinnamon Rolls</th>
+                    <td>₱120 / tub of 3</td>
+                    <td>₱170</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Garlic Rolls Bread</th>
+                    <td>₱120 / tub of 3</td>
+                    <td>—</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Banana Bread</th>
+                    <td>₱110 / tub of loaf</td>
+                    <td>₱150</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="menu-section" data-category="drinks" aria-labelledby="drinks-heading">
+            <h2 id="drinks-heading">Drinks</h2>
+            <ul class="drinks-list">
+              <li><span>Strawberry Cheesecake</span><strong>₱99</strong></li>
+              <li><span>Spanish Latte</span><strong>₱99</strong></li>
+              <li><span>Cookies and Cream</span><strong>₱99</strong></li>
+              <li><span>Salted Caramel</span><strong>₱99</strong></li>
+              <li><span>Red Velvet Cheesecake</span><strong>₱99</strong></li>
+            </ul>
+          </section>
+        </section>
+      </section>
+
+      <section id="contact" class="contact-card" aria-labelledby="contact-heading">
+        <h2 id="contact-heading">Contact &amp; Orders</h2>
+        <div class="contact-grid">
+          <p><span>Instagram</span> @yourhandle</p>
+          <p><span>Phone</span> +63 900 000 0000</p>
+          <p><span>Location</span> Your City, Philippines</p>
+          <p><span>Operating Hours</span> Mon–Sun, 9:00 AM – 8:00 PM</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>© <span id="year"></span> Daaianew. Made with love.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
